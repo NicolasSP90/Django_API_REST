@@ -1,0 +1,5 @@
+.venv
+.env
+poetry.lock
+README_Desafio.md
+__pycache__
