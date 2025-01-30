@@ -30,7 +30,8 @@ O projeto foi dividido nas seguintes etapas:
 * *poetry* - Gerenciamento de pacotes e requerimentos;
 * *python-dotenv* - Gerenciamento de variáveis de ambiente;
 * *psycopg2-binary* - Conexão com banco PostgreSQL;
-* *django[bcrypt]* - criptografia das senahs de usuários;
+* *django[bcrypt]* - criptografia das senhas de usuários;
+* *djangorestframework-simplejwt* - autenticação JWT (Bearer Token);
 
 Segue configuração inicial:
 
@@ -44,6 +45,8 @@ poetry add django-cors-headers
 poetry add python-dotenv
 poetry add psycopg2-binary
 poetry add django[bcrypt]
+poetry add djangorestframework-simplejwt
+
 ```
 
 ## Django
@@ -79,8 +82,6 @@ O projeto irá utilizar os modelos
 * Accounts - Modelo para informações da conta. Cada conta é vinculada a um único usuário, mas pode estar vinculada a diversas transações.
 
 * Transactions - Modelo para informações das transacões. Cada Transacão é vinculada a duas contas ('Origem' e 'Destino')
-
-* AccountsTransactions - tabela intermediária para lidar com a relação ManytoMany das tabelas de *Accounts* e *Transactions*
 
 ![Diagrama Objetos](assets/Tables.png)
 
@@ -130,6 +131,14 @@ No postgreSQL o superuser criado se encontra na tabela *auth_users*
 SELECT * FROM auth_user
 ```
 
+### Popular o Banco de Dados
+
+Foi utilizado o *BaseCommand* do Django para configurar e adicionar dados no banco para testes. O script se encontra em *api_rest/management/commands/populate_db.py*. 
+
+```
+python manage.py populate_db
+```
+
 ### Serializers
 
 Em *api_rest/serializers.py* estão definidas as estruturas de retorno de json dos objetos.
@@ -137,3 +146,14 @@ Em *api_rest/serializers.py* estão definidas as estruturas de retorno de json d
 ### Views
 
 Em *api_rest/views.py* estão definidas as funções da api.
+
+### URLs (api_rest)
+
+### Regras de Negócio
+
+#### Tipos de transação:
+
+A tabela de transações possui duas colunas que representam o id da conta de origem e o id da conta de destino. Isso pode mudar para o tipo de transação:
+* 'SAQUE' ou 'DEPOSITO' -  não necssariamente possuem uma conta de origem (Depósito) ou destino (Saque). Nesses casos o id da conta de origem e destino é o mesmo.
+
+

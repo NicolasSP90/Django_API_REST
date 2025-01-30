@@ -11,4 +11,53 @@ from .serializers import *
 import json
 
 
-# Create your views here.
+@api_view(['GET'])
+def get_users(request):
+
+    if request.method == 'GET':
+        users = Users.objects.all()
+
+        serializer = UsersSerializer(users, many=True)
+        return Response(serializer.data)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_transactions(request):
+
+    if request.method == 'GET':
+        transactions = Transactions.objects.all()
+
+        serializer = TransactionsSerializer(transactions, many=True)
+        return Response(serializer.data)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_accounts(request):
+
+    if request.method == 'GET':
+        accounts = Accounts.objects.all()
+
+        serializer = AccountsSerializer(accounts, many=True)
+        return Response(serializer.data)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_by_username(request, username):
+
+    try:
+        user = Users.objects.get(username=username)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        
+        serializer = UsersSerializer(user)
+
+        return Response(serializer.data)
+

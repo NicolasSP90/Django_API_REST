@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.hashers import make_password
 
 class Users(AbstractUser):
     cpf = models.CharField(
@@ -8,6 +9,7 @@ class Users(AbstractUser):
         default="")
     
     USERNAME_FIELD = 'cpf'
+    REQUIRED_FIELDS = ['email']
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -21,12 +23,30 @@ class Users(AbstractUser):
         blank=True
     )
 
+    def save(self, *args, **kwargs):
+        # Garante a criptografia da senha se necessário
+        if self.pk and Users.objects.filter(pk=self.pk).exists():
+            original_password = Users.objects.get(pk=self.pk).password
+            if original_password != self.password:
+                self.password = make_password(self.password)
+        else:
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.id} - {self.username} | {self.email}"
 
 
 class Accounts(models.Model):
     account_number = models.IntegerField(default=0)
+
+    class AccountType(models.TextChoices):
+        CC = "CC", "Conta Corrente"
+        CP = "CP", "Conta Poupança"
+
+    account_type = models.CharField(
+        choices=AccountType.choices, 
+        max_length=20)
 
     account_balance = models.DecimalField(
         default=0.0, 
@@ -39,7 +59,7 @@ class Accounts(models.Model):
         related_name="accounts")
     
     def __str__(self):
-        return f"{self.id} - Account {self.account_number} - Balance: {self.acc_balance}"
+        return f"{self.id} - Account {self.account_number} - Balance: {self.account_balance}"
 
 
 class Transactions(models.Model):    
@@ -60,28 +80,11 @@ class Transactions(models.Model):
     
     transaction_date = models.DateTimeField(auto_now_add=True)
     
-    accounts = models.ManyToManyField(
-        Accounts, 
-        through='AccountsTransactions', 
-        related_name='transactions')
-    
-
-class AccountsTransactions(models.Model):
-    account = models.ForeignKey(
-        Accounts, 
-        on_delete=models.CASCADE)
-    
-    transaction = models.ForeignKey(
-        Transactions, 
-        on_delete=models.CASCADE)
-    
-    role = models.CharField(
-        max_length=10, 
-        choices=[('origem', 'Origem'), ('destino', 'Destino')])
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['account', 'transaction'], 
-                name='unique_account_transaction')
-        ]
+    transaction_source = models.ForeignKey(
+        Accounts, on_delete=models.CASCADE, 
+        related_name='transaction_source'
+    )
+    transaction_destination = models.ForeignKey(
+        Accounts, on_delete=models.CASCADE, 
+        related_name='transaction_destination'
+    )
