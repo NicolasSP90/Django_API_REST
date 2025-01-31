@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework', # REST framework adicionado
     'corsheaders', # corsheaders adicionado
-    'api_rest' # aplicação
+    'api_rest',
+    'api_root',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -114,6 +116,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -147,8 +153,27 @@ CORS_ALLOW_ORIGINS = [
 # Password Hashers - 
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
-    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
-    "django.contrib.auth.hashers.Argon2PasswordHasher",
-    "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
+
+from datetime import timedelta
+
+AUTH_USER_MODEL = 'api_rest.Users'
+
+# Configurações JWT
+SIMPLE_JWT = {
+    'USER_ID_FIELD': 'cpf',
+    'USER_ID_CLAIM': 'cpf',
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# DRF Authentication Classes
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}

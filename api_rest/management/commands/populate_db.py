@@ -22,14 +22,14 @@ class Command(BaseCommand):
 
         for i in range(user_number):
             user = Users.objects.create(
-                password = f"User_{i}",
                 username=f"User_{i}",
                 first_name = f"User {i}",
                 last_name = f"User {i}",
                 email = f"user_{i}@example.com",
                 cpf = cpf_list[i])
-            
-            user.set_password(f"User_{i}")
+
+            pass_string = "User_" + str(i)
+            user.set_password(pass_string)
             user.save()
             
             acc = Accounts.objects.create(

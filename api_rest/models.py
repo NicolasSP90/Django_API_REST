@@ -8,8 +8,12 @@ class Users(AbstractUser):
         unique=True, 
         default="")
     
+    password = models.CharField(
+        max_length=255
+    )
+    
     USERNAME_FIELD = 'cpf'
-    REQUIRED_FIELDS = ['email']
+    REQUIRED_FIELDS = ['username', 'email']
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -22,16 +26,6 @@ class Users(AbstractUser):
         related_name='custom_user_permissions',
         blank=True
     )
-
-    def save(self, *args, **kwargs):
-        # Garante a criptografia da senha se necessário
-        if self.pk and Users.objects.filter(pk=self.pk).exists():
-            original_password = Users.objects.get(pk=self.pk).password
-            if original_password != self.password:
-                self.password = make_password(self.password)
-        else:
-            self.password = make_password(self.password)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id} - {self.username} | {self.email}"
