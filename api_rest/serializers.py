@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Users, Accounts, Transactions
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
 
+from .models import *
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -33,10 +33,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return super().validate(attrs)
 
+
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['username', 'first_name', 'last_name', 'email', 'cpf']
+        fields = ['username', 'first_name', 'last_name', 'email']
 
 
 class AccountsSerializer(serializers.ModelSerializer):
@@ -49,3 +50,29 @@ class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
         fields = '__all__'
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Accounts
+        fields = ["account_number", "account_type"]
+
+
+class UserAccountsSerializer(serializers.ModelSerializer):
+    accounts = AccountSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Users
+        fields = ["username", "first_name", "last_name", "cpf", "accounts"]
+
+
+class CreateUsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['username', 'first_name', 'last_name', 'email', 'cpf', 'password']
+    
+    def create(self, validated_data):
+        user = Users(**validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user

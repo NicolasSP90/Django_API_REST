@@ -139,15 +139,12 @@ Foi utilizado o *BaseCommand* do Django para configurar e adicionar dados no ban
 python manage.py populate_db
 ```
 
-### Serializers
+### Requisições
 
-Em *api_rest/serializers.py* estão definidas as estruturas de retorno de json dos objetos.
-
-### Views
-
-Em *api_rest/views.py* estão definidas as funções da api.
-
-### URLs (api_rest)
+Para cada requisição prevista, um conjunto de itens será criado:
+* Em *api_rest/urls.py* - será criado o endereço e a função correspondente a ele
+* Em *api_rest/views.py* - será criada a lógica da requisição e seu retorno
+* Em *api_rest/serializers.py* - será criado a lógica de consumo/retorno do json da api
 
 ### Regras de Negócio
 
