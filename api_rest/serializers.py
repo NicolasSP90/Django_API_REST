@@ -40,6 +40,18 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = ['username', 'first_name', 'last_name', 'email']
 
 
+class CreateUsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['username', 'first_name', 'last_name', 'email', 'cpf', 'password']
+    
+    def create(self, validated_data):
+        user = Users(**validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+
 class AccountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accounts
@@ -65,14 +77,15 @@ class UserAccountsSerializer(serializers.ModelSerializer):
         model = Users
         fields = ["username", "first_name", "last_name", "cpf", "accounts"]
 
+class UserAccountSerializer(serializers.ModelSerializer):
+    account = serializers.SerializerMethodField()
 
-class CreateUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['username', 'first_name', 'last_name', 'email', 'cpf', 'password']
+        fields = ["username", "first_name", "last_name", "cpf", "account"]
     
-    def create(self, validated_data):
-        user = Users(**validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+    def get_account(self, obj):
+        account = self.context.get('account')
+        if account:
+            return AccountsSerializer(account).data
+        return None

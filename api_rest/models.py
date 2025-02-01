@@ -52,6 +52,8 @@ class Accounts(models.Model):
         on_delete=models.CASCADE, 
         related_name="accounts")
     
+    is_active = True
+    
     def __str__(self):
         return f"{self.id} - Account {self.account_number} - Balance: {self.account_balance}"
 
@@ -61,7 +63,6 @@ class Transactions(models.Model):
         DEPOSITO = "DEPOSITO", "Depósito"
         SAQUE = "SAQUE", "Saque"
         TRANSFERENCIA = "TRANSFERENCIA", "Transferência"
-        PAGAMENTO = "PAGAMENTO", "Pagamento"
 
     transaction_type = models.CharField(
         choices=TransactionType.choices, 

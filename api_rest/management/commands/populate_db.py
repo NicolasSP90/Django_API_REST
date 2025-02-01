@@ -6,6 +6,7 @@ class Command(BaseCommand):
     help = "Popula o banco de dados com registros iniciais"
     def handle(self, *args, **kwargs):
         user_number = 100
+        acc_number = user_number * 2
         transactions_by_account = 10
         cpf_list = set()
         acc_list = set()
@@ -14,7 +15,7 @@ class Command(BaseCommand):
             cpf_list.add(random.randint(10000000000, 99999999999))
         cpf_list = list(cpf_list)
 
-        while len(acc_list) < user_number:
+        while len(acc_list) < acc_number:
             acc_list.add(random.randint(10000, 99999))
         acc_list = list(acc_list)
 
@@ -32,14 +33,23 @@ class Command(BaseCommand):
             user.set_password(pass_string)
             user.save()
             
-            acc = Accounts.objects.create(
-                account_number = acc_list[i],
-                account_type = random.choice(["CC", "CP"]),
+            acc1 = Accounts.objects.create(
+                account_number = acc_list.pop(),
+                account_type = "CC",
                 account_balance = random.uniform(100.0, 5000.0),
                 account_user = user
             )
 
-            accounts.append(acc)
+            accounts.append(acc1)
+
+            acc2 = Accounts.objects.create(
+                account_number = acc_list.pop(),
+                account_type = "CP",
+                account_balance = random.uniform(100.0, 5000.0),
+                account_user = user
+            )
+
+            accounts.append(acc2)
 
         for acc in accounts:
             for _ in range(transactions_by_account):
