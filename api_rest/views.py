@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.contrib.auth.hashers import check_password
+from django.db import transaction as dbt
 
 from .models import *
 from .serializers import *
@@ -41,23 +42,31 @@ def get_account_by_acc_number(acc_number):
 
 def validate_user(user):
     if user == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
     if user.is_active == False:
-        return Response(status=status.HTTP_410_GONE)
+        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_410_GONE)
 
 def validate_self_user(request, user):
-    validate_user(user)
-    
+    validation = validate_user(user)
+    if validation != None:
+        return validation
     if user != request.user:
-        return Response({"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"error": "Permissão negada."}, status=status.HTTP_403_FORBIDDEN)
+    
+def validate_account(account):
+    if account == None:
+        return Response({"error": "Conta não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+    if account.is_active == False:
+        return Response({"error": "Conta não encontrada."}, status=status.HTTP_410_GONE)
 
 def validate_self_user_account(user, account):
     if account == None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Conta não encontrada."}, status=status.HTTP_404_NOT_FOUND)
         
     if account.account_user != user:
-        Response(status=status.HTTP_400_BAD_REQUEST)
+        Response({"error": "Usuário não pode acessar a conta."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Admin Permission Requests
@@ -97,9 +106,11 @@ def create_user(request):
 def update_user(request, cpf):
 
     if request.method == 'PUT':
-        user  = get_user_by_cpf(cpf)
+        user = get_user_by_cpf(cpf)
         
-        validate_user()
+        validation = validate_user(user)
+        if validation != None:
+            return validation
 
         data = request.data
 
@@ -126,7 +137,9 @@ def delete_user(request, cpf):
     if request.method == 'DELETE':
         user  = get_user_by_cpf(cpf)
         
-        validate_user()
+        validation = validate_user(user)
+        if validation != None:
+            return validation
 
         user.is_active = False
         user.save()
@@ -140,7 +153,7 @@ def delete_user(request, cpf):
 def activate_user(request, cpf):
 
     if request.method == 'PUT':
-        user  = get_user_by_cpf(cpf)
+        user = get_user_by_cpf(cpf)
         
         if user == None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -185,9 +198,11 @@ def get_all_transactions(request):
 def get_self(request, cpf):
 
     if request.method == 'GET':
-        user  = get_user_by_cpf(cpf)
-        
-        validate_self_user(request, user)
+        user = get_user_by_cpf(cpf)
+
+        validation = validate_self_user(request, user)
+        if validation != None:
+            return validation
         
         serializer = UserAccountsSerializer(user)
         return Response(serializer.data)
@@ -202,11 +217,15 @@ def get_self_account(request, cpf, account_number):
         
         user = get_user_by_cpf(cpf)
     
-        validate_self_user(request, user)
+        validation = validate_self_user(request, user)
+        if validation != None:
+            return validation
         
         account = get_account_by_acc_number(account_number)
 
-        validate_self_user_account(user, account)
+        validation = validate_self_user_account(user, account)
+        if validation != None:
+            return validation
         
         serializer = UserAccountSerializer(user, context={'account': account})
         return Response(serializer.data)
@@ -214,11 +233,11 @@ def get_self_account(request, cpf, account_number):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_withdraw(request, cpf, account_number):
 
-    if request.method == 'PUT':
+    if request.method == 'POST':
 
         user = get_user_by_cpf(cpf)
     
@@ -229,17 +248,82 @@ def make_withdraw(request, cpf, account_number):
         validate_self_user_account(user, account)
 
         data = request.data
-
         value = Decimal(data['value'])
-        print(value)
-        print(account.account_balance)
 
         if value > account.account_balance:
             return Response({"error": "Saldo Insuficiente."}, status=status.HTTP_400_BAD_REQUEST)
         
-        account.account_balance -= value
-        account.save()
 
-        return Response({"sucess": "Operação realizada com sucesso."}, status=status.HTTP_200_OK)
+        try: 
+            with dbt.atomic():
+                serializer = CreateTransactionsSerializer(data={'transaction_type': str(data['type']),
+                                                                'transaction_value': value,
+                                                                'transaction_source': account.id,
+                                                                'transaction_destination': account.id})
+
+                if serializer.is_valid():
+                    transaction = serializer.save()
+                else:
+                    Response({'error': 'Problenas na criação da transação.'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                account.account_balance -= value
+                account.save()
+                
+                return Response(TransactionsSerializer(transaction).data, status=status.HTTP_201_CREATED)
+        except:
+            return Response({'error': 'Saque não concluído. Erro inesperado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def make_transfer(request, cpf, account_number):
+
+    if request.method == 'POST':
+        
+        user = get_user_by_cpf(cpf)
+    
+        validation = validate_self_user(request, user)
+        if validation != None:
+            return validation
+        
+        account = get_account_by_acc_number(account_number)
+
+        validation = validate_self_user_account(user, account)
+        if validation != None:
+            return validation
+        
+        data = request.data
+        value = Decimal(data['value'])
+
+        if account.account_balance < value:
+            return Response({"error": "Saldo insuficiente."}, status=status.HTTP_400_BAD_REQUEST)
+
+        account_destination = get_account_by_acc_number(data['account_number'])
+        validation = validate_account(account_destination)
+        if validation != None:
+            return validation
+        
+        try: 
+            with dbt.atomic():
+                serializer = CreateTransactionsSerializer(data={'transaction_type': str(data['type']),
+                                                                'transaction_value': value,
+                                                                'transaction_source': account.id,
+                                                                'transaction_destination': account_destination.id})
+
+                if serializer.is_valid():
+                    transaction = serializer.save()
+                else:
+                    Response({'error': 'Problenas na criação da transação.'}, status=status.HTTP_400_BAD_REQUEST)
+                
+                account.account_balance -= value
+                account_destination.account_balance += value
+                account.save()
+                account_destination.save()
+                
+                return Response(TransactionsSerializer(transaction).data, status=status.HTTP_201_CREATED)
+        except:
+            return Response({'error': 'Saque não concluído. Erro inesperado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response(status=status.HTTP_400_BAD_REQUEST)

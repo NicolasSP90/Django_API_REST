@@ -52,7 +52,7 @@ class Accounts(models.Model):
         on_delete=models.CASCADE, 
         related_name="accounts")
     
-    is_active = True
+    is_active = models.BooleanField(default=True)
     
     def __str__(self):
         return f"{self.id} - Account {self.account_number} - Balance: {self.account_balance}"
@@ -76,10 +76,12 @@ class Transactions(models.Model):
     transaction_date = models.DateTimeField(auto_now_add=True)
     
     transaction_source = models.ForeignKey(
-        Accounts, on_delete=models.CASCADE, 
+        Accounts, 
+        on_delete=models.CASCADE, 
         related_name='transaction_source'
     )
     transaction_destination = models.ForeignKey(
-        Accounts, on_delete=models.CASCADE, 
+        Accounts, 
+        on_delete=models.CASCADE, 
         related_name='transaction_destination'
     )

@@ -13,6 +13,7 @@ urlpatterns = [
     path('users/update_user/<str:cpf>/', views.update_user, name='update_user'),
     path('users/delete_user/<str:cpf>/', views.delete_user, name='delete_user'),
     path('users/activate_user/<str:cpf>/', views.activate_user, name='activate_user'),
+    # path('user/<str:cpf>/account/<str:account_number>/deposit/', views.make_deposit, name='make_deposit') <- OBRIGATORIO
 
     # Check all Accounts
     path('accounts/', views.get_all_accounts, name='get_all_accounts'),
@@ -26,8 +27,6 @@ urlpatterns = [
     # Check all Transactions
     path('transactions/', views.get_all_transactions, name='get_all_transactions'),
 
-    # path('user/<str:cpf>/account/<str:account_number>/deposit/', views.make_deposit, name='make_deposit') <- OBRIGATORIO
-
 
     # Any Authenticated User
     # Own Information
@@ -35,8 +34,8 @@ urlpatterns = [
     path('user/<str:cpf>/account/<str:account_number>/', views.get_self_account, name='get_self_account'),
 
     # Actions
-    path('user/<str:cpf>/account/<str:account_number>/withdraw/', views.make_withdraw, name='make_withdraw')
-    # path('user/<str:cpf>/account/<str:account_number>/transaction/', views.make_transaction, name='make_transaction') <- OBRIGATORIO
+    path('user/<str:cpf>/account/<str:account_number>/withdraw/', views.make_withdraw, name='make_withdraw'),
+    path('user/<str:cpf>/account/<str:account_number>/transfer/', views.make_transfer, name='make_transfer'),
     # path('user/<str:cpf>/account/<str:account_number>/transfer/history', views.transaction_history, name='') <- OBRIGATORIO (COM FILTRO DE DATA)
 
     # Single User Search

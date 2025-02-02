@@ -54,7 +54,7 @@ class Command(BaseCommand):
         for acc in accounts:
             for _ in range(transactions_by_account):
                 random_acc_number = random.choice([a for a in accounts if a != acc])
-                random_type = random.choice(["DEPOSITO", "SAQUE", "TRANSFERENCIA", "PAGAMENTO"])
+                random_type = random.choice(["DEPOSITO", "SAQUE", "TRANSFERENCIA"])
 
                 def return_acc(acc_param, random_acc_number_param, acc_origin, acc_type):
                     if acc_origin == "source":

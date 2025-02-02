@@ -77,6 +77,7 @@ class UserAccountsSerializer(serializers.ModelSerializer):
         model = Users
         fields = ["username", "first_name", "last_name", "cpf", "accounts"]
 
+
 class UserAccountSerializer(serializers.ModelSerializer):
     account = serializers.SerializerMethodField()
 
@@ -88,4 +89,9 @@ class UserAccountSerializer(serializers.ModelSerializer):
         account = self.context.get('account')
         if account:
             return AccountsSerializer(account).data
-        return None
+
+
+class CreateTransactionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transactions
+        fields = ["transaction_type", "transaction_value", "transaction_destination", "transaction_source"]
