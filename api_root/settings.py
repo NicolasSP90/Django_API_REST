@@ -15,8 +15,6 @@ from pathlib import Path
 # Loading .env
 from dotenv import load_dotenv
 import os
-
-# Carregar variáveis do arquivo .env
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -36,7 +34,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,8 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework', # REST framework adicionado
-    'corsheaders', # corsheaders adicionado
+    'rest_framework', # REST framework added
+    'corsheaders', # Corsheaders added
     'api_rest',
     'api_root',
     'rest_framework_simplejwt',
@@ -143,14 +140,12 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Para produção (AWS, GCP, Azure, ...)
-# CORS_ORIGIN_ALLOW_ALL = True 
-
+# Address - for production change the address
 CORS_ALLOW_ORIGINS = [
     'https://localhost:8080',
-] # Alterar para o endereço de produção
+]
 
-# Password Hashers - 
+# Password Hasher - BCrypt
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]

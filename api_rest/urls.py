@@ -7,13 +7,13 @@ urlpatterns = [
     # Admin permissions ONLY
     # Check all Users
     path('users/', views.get_all_users, name='get_all_users'),
+    path('user/<str:cpf>/account/<str:account_number>/deposit/', views.make_deposit, name='make_deposit'),
     
     # Users CRUD
     path('users/create_user/', views.create_user, name='create_user'),
     path('users/update_user/<str:cpf>/', views.update_user, name='update_user'),
     path('users/delete_user/<str:cpf>/', views.delete_user, name='delete_user'),
     path('users/activate_user/<str:cpf>/', views.activate_user, name='activate_user'),
-    # path('user/<str:cpf>/account/<str:account_number>/deposit/', views.make_deposit, name='make_deposit') <- OBRIGATORIO
 
     # Check all Accounts
     path('accounts/', views.get_all_accounts, name='get_all_accounts'),
@@ -30,13 +30,13 @@ urlpatterns = [
 
     # Any Authenticated User
     # Own Information
-    path('user/<str:cpf>/', views.get_self, name='get_self'),
-    path('user/<str:cpf>/account/<str:account_number>/', views.get_self_account, name='get_self_account'),
+    path('user/<str:cpf>/', views.get_self, name='get_self'), # atualizar para admin poder fazer para qualquer usuário
+    path('user/<str:cpf>/account/<str:account_number>/', views.get_self_account, name='get_self_account'), # atualizar para admin poder fazer para qualquer usuário
 
     # Actions
     path('user/<str:cpf>/account/<str:account_number>/withdraw/', views.make_withdraw, name='make_withdraw'),
     path('user/<str:cpf>/account/<str:account_number>/transfer/', views.make_transfer, name='make_transfer'),
-    # path('user/<str:cpf>/account/<str:account_number>/transfer/history', views.transaction_history, name='') <- OBRIGATORIO (COM FILTRO DE DATA)
+    path('user/<str:cpf>/account/<str:account_number>/history/', views.transaction_history, name='transaction_history') # atualizar para admin poder fazer para qualquer usuário
 
     # Single User Search
     # path('users/user/<str:cpf>/', views.get_user_by_cpf, name=''), <- OBRIGATORIO

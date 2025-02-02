@@ -12,7 +12,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
-        # Mapear 'cpf' para o campo de autenticação esperado
         cpf = attrs.get('cpf')
         password = attrs.get('password')
 
@@ -95,3 +94,32 @@ class CreateTransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
         fields = ["transaction_type", "transaction_value", "transaction_destination", "transaction_source"]
+
+
+# Transaction History Serializers
+class HistoryUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['username']
+
+class HistoryAccountSerializer(serializers.ModelSerializer):
+    account_user = HistoryUserSerializer(read_only=True)
+    class Meta:
+        model = Accounts
+        fields = ['account_number', 'account_user']
+
+class HistoryTransactionsSerializer(serializers.ModelSerializer):
+    transaction_source = HistoryAccountSerializer(read_only=True)
+    transaction_destination = HistoryAccountSerializer(read_only=True)
+
+    class Meta:
+        model = Transactions
+        fields = [
+            'id', 
+            'transaction_type', 
+            'transaction_value', 
+            'transaction_date', 
+            'transaction_source', 
+            'transaction_destination'
+        ]
+
