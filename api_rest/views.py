@@ -11,6 +11,7 @@ from django.db import transaction as dbt
 
 from .models import *
 from .serializers import *
+from .views_functions import * 
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
@@ -26,70 +27,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
-
-# General Functions
-def get_user_by_cpf(cpf):
-    try:
-        user = Users.objects.get(cpf=cpf)
-    except:
-        user = None
-    return user
-
-def get_account_by_acc_number(acc_number):
-    try:
-        account = Accounts.objects.get(account_number = acc_number)
-    except:
-        account = None
-    return account
-
-def validate_user(user):
-    if user == None:
-        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-    if user.is_active == False:
-        return Response({"error": "Usuário não encontrado."}, status=status.HTTP_410_GONE)
-
-def validate_self_user(request, user):
-    validation = validate_user(user)
-    if validation != None:
-        return validation
-    if user != request.user:
-        return Response({"error": "Permissão negada."}, status=status.HTTP_403_FORBIDDEN)
-
-def validate_admin_user(request, user):
-    validation = validate_user(user)
-    if validation != None:
-        return validation
-    if (user != request.user) and (not request.user.is_staff):
-        return Response({"error": "Permissão negada."}, status=status.HTTP_403_FORBIDDEN)
-
-def validate_account(account):
-    if account == None:
-        return Response({"error": "Conta não encontrada."}, status=status.HTTP_404_NOT_FOUND)
-    if account.is_active == False:
-        return Response({"error": "Conta não encontrada."}, status=status.HTTP_410_GONE)
-
-# Verificar essa validação
-def validate_self_user_account(user, account):
-    validation = validate_account(account)
-    if validation != None:
-        return validation
-    if account.account_user != user:
-        Response({"error": "Usuário não pode acessar a conta."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# Admin Permission Requests
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def get_all_users(request):
-
-    if request.method == 'GET':
-        users = Users.objects.filter(is_active = True)
-        serializer = UsersSerializer(users, many=True)
-        return Response(serializer.data)
-    
-    return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
+# Users CRUD - Admin permissions ONLY
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def create_user(request):
@@ -105,7 +43,7 @@ def create_user(request):
             return_data = UsersSerializer(user).data
             return Response(return_data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Não foi possível criar o usuário.'}, status=status.HTTP_400_BAD_REQUEST)
     
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -164,7 +102,7 @@ def activate_user(request, cpf):
         user = get_user_by_cpf(cpf)
         
         if user == None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
         user.is_active = True
         user.save()
@@ -174,12 +112,92 @@ def activate_user(request, cpf):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Accounts CRUD - Admin permissions ONLY
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def create_account(request, cpf):
+    if request.method == 'POST':
+        user = get_user_by_cpf(cpf)
+        
+        validation = validate_user(user)
+        if validation != None:
+            return validation
+        
+        data = request.data
+
+        serializer = CreateAccountSerializer(data={'account_number': data['account_number'], 
+                                                   'account_type': data['account_type'], 
+                                                   'account_user': user.id})
+
+        if serializer.is_valid():
+            account = serializer.save()
+
+            return_data = AccountsSerializer(account).data
+            return Response(return_data, status=status.HTTP_201_CREATED)
+
+        return Response({'error':'Não foi possível criar a conta.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_account(request, account_number):
+
+    if request.method == 'DELETE':
+        account  = get_account_by_acc_number(account_number)
+        
+        validation = validate_account(account)
+        if validation != None:
+            return validation
+        
+        if account.account_balance > 0:
+            return Response({'error': 'Saldo na conta deve ser zerado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        account.is_active = False
+        account.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def activate_account(request, account_number):
+
+    if request.method == 'PUT':
+        account  = get_account_by_acc_number(account_number)
+        
+        if account == None:
+            return Response({"error": "Conta não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+
+        account.is_active = True
+        account.save()
+
+        return Response(AccountsSerializer(account).data ,status=status.HTTP_204_NO_CONTENT)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# Search Actions
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_all_users(request):
+
+    if request.method == 'GET':
+        users = Users.objects.filter(is_active = True)
+        serializer = UsersSerializer(users, many=True)
+        return Response(serializer.data)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_all_accounts(request):
 
     if request.method == 'GET':
-        accounts = Accounts.objects.all()
+        accounts = Accounts.objects.filter(is_active = True)
 
         serializer = AccountsSerializer(accounts, many=True)
         return Response(serializer.data)
@@ -200,6 +218,71 @@ def get_all_transactions(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_self(request, cpf):
+
+    if request.method == 'GET':
+        user = get_user_by_cpf(cpf)
+
+        validation = validate_admin_user(request, user)
+        if validation != None:
+            return validation
+        
+        serializer = UserAccountsSerializer(user)
+        return Response(serializer.data)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_self_account(request, cpf, account_number):
+
+    if request.method == 'GET':
+        
+        user = get_user_by_cpf(cpf)
+    
+        validation = validate_admin_user(request, user)
+        if validation != None:
+            return validation
+        
+        account = get_account_by_acc_number(account_number)
+
+        validation = validate_self_user_account(user, account)
+        if validation != None:
+            return validation
+        
+        serializer = UserAccountSerializer(user, context={'account': account})
+        return Response(serializer.data)
+    
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_account(request, account_number):
+
+    if request.method == 'GET':
+        account = get_account_by_acc_number(account_number)
+
+        validation = validate_account(account)
+        if validation != None:
+            return validation
+        
+        user = Users.objects.get(id = account.account_user.id)
+        if user == None:
+            return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserAccountSerializer(user, context={'account': account})
+
+        print(serializer)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+# Actions
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def make_deposit(request, cpf, account_number):
@@ -240,46 +323,6 @@ def make_deposit(request, cpf, account_number):
         except:
             return Response({'error': 'Saque não concluído. Erro inesperado.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return Response(status=status.HTTP_400_BAD_REQUEST)
-
-# Any Authenticated User
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_self(request, cpf):
-
-    if request.method == 'GET':
-        user = get_user_by_cpf(cpf)
-
-        validation = validate_self_user(request, user)
-        if validation != None:
-            return validation
-        
-        serializer = UserAccountsSerializer(user)
-        return Response(serializer.data)
-    
-    return Response(status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_self_account(request, cpf, account_number):
-
-    if request.method == 'GET':
-        
-        user = get_user_by_cpf(cpf)
-    
-        validation = validate_self_user(request, user)
-        if validation != None:
-            return validation
-        
-        account = get_account_by_acc_number(account_number)
-
-        validation = validate_self_user_account(user, account)
-        if validation != None:
-            return validation
-        
-        serializer = UserAccountSerializer(user, context={'account': account})
-        return Response(serializer.data)
-    
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -386,7 +429,7 @@ def transaction_history(request, cpf, account_number):
 
         user = get_user_by_cpf(cpf)
     
-        validation = validate_self_user(request, user)
+        validation = validate_admin_user(request, user)
         if validation != None:
             return validation
         

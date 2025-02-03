@@ -33,12 +33,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return super().validate(attrs)
 
 
-class UsersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Users
-        fields = ['username', 'first_name', 'last_name', 'email']
-
-
 class CreateUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
@@ -49,6 +43,17 @@ class CreateUsersSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+class CreateAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Accounts
+        fields = ['account_number', 'account_type', 'account_balance', 'account_user']
 
 
 class AccountsSerializer(serializers.ModelSerializer):

@@ -4,46 +4,29 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    # Admin permissions ONLY
-    # Check all Users
-    path('users/', views.get_all_users, name='get_all_users'),
-    path('user/<str:cpf>/account/<str:account_number>/deposit/', views.make_deposit, name='make_deposit'),
-    
-    # Users CRUD
-    path('users/create_user/', views.create_user, name='create_user'),
+    # Users CRUD - Admin permissions ONLY
+    path('users/create_user/', views.create_user, name='create_user'), 
     path('users/update_user/<str:cpf>/', views.update_user, name='update_user'),
     path('users/delete_user/<str:cpf>/', views.delete_user, name='delete_user'),
     path('users/activate_user/<str:cpf>/', views.activate_user, name='activate_user'),
 
-    # Check all Accounts
-    path('accounts/', views.get_all_accounts, name='get_all_accounts'),
-    
-    # Accounts CRUD
-    # path('accounts/create_account/', views.create_account, name=''),
-    # path('accounts/update_account/<str:account_number>/', views.update_account, name=''),
-    # path('accounts/delete_account/<str:account_number>/', views.delete_account, name=''),
-    # path('accounts/activate_account/<str:account_number>/', views.activate_account, name=''),
+    # Accounts CRUD - Admin permissions ONLY
+    path('accounts/create_account/<str:cpf>/', views.create_account, name='create_account'),
+    path('accounts/delete_account/<str:account_number>/', views.delete_account, name='delete_account'),
+    path('accounts/activate_account/<str:account_number>/', views.activate_account, name='activate_account'), 
+    # Necessário que os demais retornos de contas levem em conta o activate
 
-    # Check all Transactions
-    path('transactions/', views.get_all_transactions, name='get_all_transactions'),
-
-
-    # Any Authenticated User
-    # Own Information
-    path('user/<str:cpf>/', views.get_self, name='get_self'), # atualizar para admin poder fazer para qualquer usuário
-    path('user/<str:cpf>/account/<str:account_number>/', views.get_self_account, name='get_self_account'), # atualizar para admin poder fazer para qualquer usuário
+    # Search Actions
+    path('users/', views.get_all_users, name='get_all_users'), # Admin permissions ONLY
+    path('accounts/', views.get_all_accounts, name='get_all_accounts'), # Admin permissions ONLY
+    path('transactions/', views.get_all_transactions, name='get_all_transactions'), # Admin permissions ONLY
+    path('user/<str:cpf>/', views.get_self, name='get_self'), # Self User or Admin
+    path('user/<str:cpf>/account/<str:account_number>/', views.get_self_account, name='get_self_account'), # Self User or Admin
+    path('account/<str:account_number>/', views.get_account, name='get_account'), # Admin permissions ONLY
 
     # Actions
-    path('user/<str:cpf>/account/<str:account_number>/withdraw/', views.make_withdraw, name='make_withdraw'),
-    path('user/<str:cpf>/account/<str:account_number>/transfer/', views.make_transfer, name='make_transfer'),
-    path('user/<str:cpf>/account/<str:account_number>/history/', views.transaction_history, name='transaction_history') # atualizar para admin poder fazer para qualquer usuário
-
-    # Single User Search
-    # path('users/user/<str:cpf>/', views.get_user_by_cpf, name=''), <- OBRIGATORIO
-
-    # Single Account Search
-    # path('accounts/account/<str:account_number>/', views.get_user_by_cpf, name=''), <- OBRIGATORIO
-
-
-    
+    path('user/<str:cpf>/account/<str:account_number>/deposit/', views.make_deposit, name='make_deposit'), # Admin Only
+    path('user/<str:cpf>/account/<str:account_number>/withdraw/', views.make_withdraw, name='make_withdraw'), # Any Authenticated User (self Only)
+    path('user/<str:cpf>/account/<str:account_number>/transfer/', views.make_transfer, name='make_transfer'), # Any Authenticated User (self Only)
+    path('user/<str:cpf>/account/<str:account_number>/history/', views.transaction_history, name='transaction_history'), # Self User or Admin
 ]
