@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 
 from .models import *
 
+# JWT Customization
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -16,23 +17,24 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         password = attrs.get('password')
 
         if not cpf or not password:
-            raise serializers.ValidationError({"detail": "CPF e senha são necessários."})
+            raise serializers.ValidationError({'error': 'CPF e senha são necessários.'})
 
         user = authenticate(username=cpf, password=password)
 
         if user is None:
-            print("Autenticação falhou.")
+            print('Autenticação falhou.')
         else:
-            print(f"Usuário autenticado: {user}")
+            print(f'Usuário autenticado: {user}')
 
         if user is None:
-            raise serializers.ValidationError({"detail": "Credenciais inválidas."})
+            raise serializers.ValidationError({'error': 'Credenciais inválidas.'})
         
         attrs['user'] = user
 
         return super().validate(attrs)
 
 
+# User Creation
 class CreateUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
@@ -45,49 +47,57 @@ class CreateUsersSerializer(serializers.ModelSerializer):
         return user
 
 
+# User Information
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ['username', 'first_name', 'last_name', 'email']
 
+
+# Account Creation
 class CreateAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accounts
         fields = ['account_number', 'account_type', 'account_balance', 'account_user']
 
 
+# Account Information
 class AccountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accounts
         fields = ['account_number', 'account_type', 'account_balance']
 
 
+# Transaction Information
 class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
         fields = '__all__'
 
 
+# User Accounts Information (User)
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accounts
-        fields = ["account_number", "account_type"]
+        fields = ['account_number', 'account_type']
 
 
+# User Accounts Information (Complete)
 class UserAccountsSerializer(serializers.ModelSerializer):
     accounts = AccountSerializer(many=True, read_only=True)
 
     class Meta:
         model = Users
-        fields = ["username", "first_name", "last_name", "cpf", "accounts"]
+        fields = ['username', 'first_name', 'last_name', 'cpf', 'accounts']
 
 
+# Information About User Account
 class UserAccountSerializer(serializers.ModelSerializer):
     account = serializers.SerializerMethodField()
 
     class Meta:
         model = Users
-        fields = ["username", "first_name", "last_name", "cpf", "account"]
+        fields = ['username', 'first_name', 'last_name', 'cpf', 'account']
     
     def get_account(self, obj):
         account = self.context.get('account')
@@ -95,10 +105,11 @@ class UserAccountSerializer(serializers.ModelSerializer):
             return AccountsSerializer(account).data
 
 
+# Transaction Creation
 class CreateTransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
-        fields = ["transaction_type", "transaction_value", "transaction_destination", "transaction_source"]
+        fields = ['transaction_type', 'transaction_value', 'transaction_destination', 'transaction_source']
 
 
 # Transaction History Serializers

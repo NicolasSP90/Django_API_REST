@@ -43,9 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework', # REST framework added
     'corsheaders', # Corsheaders added
-    'api_rest',
-    'api_root',
-    'rest_framework_simplejwt',
+    'api_rest', # Project folder added
+    'api_root', # Project folder added
+    'rest_framework_simplejwt', # JWT support added
+    'drf_yasg', 
 ]
 
 MIDDLEWARE = [
@@ -150,11 +151,13 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
 
+
+
+# Configurações JWT
 from datetime import timedelta
 
 AUTH_USER_MODEL = 'api_rest.Users'
 
-# Configurações JWT
 SIMPLE_JWT = {
     'USER_ID_FIELD': 'cpf',
     'USER_ID_CLAIM': 'cpf',
@@ -171,4 +174,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
 }

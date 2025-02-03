@@ -1,0 +1,852 @@
+{
+	"info": {
+		"_postman_id": "cbde0873-d1bd-4c9f-a125-5e89aae0fa1d",
+		"name": "WL-Consultings",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32761453"
+	},
+	"item": [
+		{
+			"name": "Admin Only",
+			"item": [
+				{
+					"name": "CRUD User",
+					"item": [
+						{
+							"name": "POST - Create User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MzcxMTAyLCJpYXQiOjE3MzgzNjkzMDIsImp0aSI6ImNlMGYxYmZhOWI1ODQxZDdiYjdhNzY1MDhmMTM2OGQ4IiwiY3BmIjoiMTExMTExMTExMTEifQ.dMBrnqMpHyF3UzYN-fKIDzivqNjoknwrz8s-H85ewQo",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"Created_1\",\r\n    \"first_name\": \"Created_1\",\r\n    \"last_name\": \"Created_1\",\r\n    \"email\": \"Created_1@example.com\",\r\n    \"cpf\": \"22222222222\",\r\n    \"password\": \"Created_1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/users/create_user/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"create_user",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT - Update User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NDIwMzY0LCJpYXQiOjE3Mzg0MTg1NjQsImp0aSI6ImQ5ZWU4MDdkOGIxMDRiNGY4ZjYzM2Q0OGQ5ZGZhNmI2IiwiY3BmIjoiMTExMTExMTExMTEifQ.dxNT9vv_MHpRs-xexrJaxs6d21WMWU48_GxG37f6nHY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"Created_2\",\r\n    \"first_name\": \"\",\r\n    \"last_name\": \"\",\r\n    \"email\": \"\",\r\n    \"cpf\": \"\",\r\n    \"password\": \"Created_2\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/users/update_user/22222222222/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"update_user",
+										"22222222222",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE - Delete User (Soft Delete)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NDIwMzY0LCJpYXQiOjE3Mzg0MTg1NjQsImp0aSI6ImQ5ZWU4MDdkOGIxMDRiNGY4ZjYzM2Q0OGQ5ZGZhNmI2IiwiY3BmIjoiMTExMTExMTExMTEifQ.dxNT9vv_MHpRs-xexrJaxs6d21WMWU48_GxG37f6nHY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/users/delete_user/22222222222/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"delete_user",
+										"22222222222",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT - Activate User (Undo Soft Delete)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NDIwMzY0LCJpYXQiOjE3Mzg0MTg1NjQsImp0aSI6ImQ5ZWU4MDdkOGIxMDRiNGY4ZjYzM2Q0OGQ5ZGZhNmI2IiwiY3BmIjoiMTExMTExMTExMTEifQ.dxNT9vv_MHpRs-xexrJaxs6d21WMWU48_GxG37f6nHY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/users/activate_user/22222222222/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"users",
+										"activate_user",
+										"22222222222",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CRUD Account",
+					"item": [
+						{
+							"name": "POST - Create Account",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTQ4MjkzLCJpYXQiOjE3Mzg1NDY0OTMsImp0aSI6ImEyN2U4NzFkZDE5OTQ1NWFhOWE1ODFiZWFiOWNiM2JjIiwiY3BmIjoiMTExMTExMTExMTEifQ.g3B0H_RGCUCQ-N7s61B6uPhFI_KqhKkLkEMD3DpYcc4",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"account_number\": \"11111\", \r\n    \"account_type\": \"CC\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/accounts/create_account/30079422483/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"accounts",
+										"create_account",
+										"30079422483",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE - Delete Account (Soft Delete)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTQ4MjkzLCJpYXQiOjE3Mzg1NDY0OTMsImp0aSI6ImEyN2U4NzFkZDE5OTQ1NWFhOWE1ODFiZWFiOWNiM2JjIiwiY3BmIjoiMTExMTExMTExMTEifQ.g3B0H_RGCUCQ-N7s61B6uPhFI_KqhKkLkEMD3DpYcc4",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/accounts/delete_account/11111/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"accounts",
+										"delete_account",
+										"11111",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT - Activate Account (Undo Soft Delete)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTQ4MjkzLCJpYXQiOjE3Mzg1NDY0OTMsImp0aSI6ImEyN2U4NzFkZDE5OTQ1NWFhOWE1ODFiZWFiOWNiM2JjIiwiY3BmIjoiMTExMTExMTExMTEifQ.g3B0H_RGCUCQ-N7s61B6uPhFI_KqhKkLkEMD3DpYcc4",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/accounts/activate_account/11111/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"accounts",
+										"activate_account",
+										"11111",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "POST - Log In - ADMIN",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cpf\":\"11111111111\",\r\n    \"password\":\"@Dm1n\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/login/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - All Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MzUwNTY4LCJpYXQiOjE3MzgzNDg3NjgsImp0aSI6Ijk2ZWQxODk2YTc4MTQ3YTRiMjZjNzdmZWRjMWUyYTU5IiwiY3BmIjoiMTExMTExMTExMTEifQ.aIg_hnqQrADUws9vnxlzGgEeu4mwnXYmcEDuHz8kRq0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/users/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - All Accounts",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/accounts/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"accounts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - All Transactions",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/transactions/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"transactions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - User Deposit (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTI1OTE3LCJpYXQiOjE3Mzg1MjQxMTcsImp0aSI6ImU1YTcwOGVlODY2ZjRjYzBhOWI2NjEwNWNlMDE4OTZlIiwiY3BmIjoiMTExMTExMTExMTEifQ.yOYS9eJ7pVERlQ1EY_sWg5EyBXMGK4QR7TDmfQntoVw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    \"type\": \"DEPOSITO\",\r\n    \"value\": \"100.87\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/30079422483/account/58879/deposit/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"30079422483",
+								"account",
+								"58879",
+								"deposit",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTUwMjQ4LCJpYXQiOjE3Mzg1NDg0NDgsImp0aSI6IjBiMmJlZWM3Yzc3MzQ1NzhhN2NjMzFmNzAxMDkwYTNhIiwiY3BmIjoiMTExMTExMTExMTEifQ.9FKiNYK_HLenMtnuizKo0Wy9qqEK5Ka1iXXoBj56d8k",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/account/11111/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"account",
+								"11111",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "POST - Log In - USER",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cpf\":\"30079422483\",\r\n    \"password\":\"User_0\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/login/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - User + All Accounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTI1ODc4LCJpYXQiOjE3Mzg1MjQwNzgsImp0aSI6IjkzMDZkYmRkNGExZDQxYmNiN2UyOWQyN2ZmNmI0YzFjIiwiY3BmIjoiMzAwNzk0MjI0ODMifQ.AMlDZfcoAlTWT07vvwZjeTEO9QRZLxjF0HdJqCXc4ZI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/30079422483/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"30079422483",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - User + Account + Balance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTI1ODc4LCJpYXQiOjE3Mzg1MjQwNzgsImp0aSI6IjkzMDZkYmRkNGExZDQxYmNiN2UyOWQyN2ZmNmI0YzFjIiwiY3BmIjoiMzAwNzk0MjI0ODMifQ.AMlDZfcoAlTWT07vvwZjeTEO9QRZLxjF0HdJqCXc4ZI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/30079422483/account/58879/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"30079422483",
+								"account",
+								"58879",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - User Withdraw",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTIzOTgwLCJpYXQiOjE3Mzg1MjIxODAsImp0aSI6ImEyNGNhZDBjYTRlOTQ5MTNiODk5NTQwMjlmMWEyZTg4IiwiY3BmIjoiMzAwNzk0MjI0ODMifQ.avPvEK0vG8ngNiVwBecWH_zEXWQozTPzUPoGCoJunoo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    \"type\": \"SAQUE\",\r\n    \"value\": \"100.87\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/30079422483/account/58879/withdraw/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"30079422483",
+								"account",
+								"58879",
+								"withdraw",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - User Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTIzOTgwLCJpYXQiOjE3Mzg1MjIxODAsImp0aSI6ImEyNGNhZDBjYTRlOTQ5MTNiODk5NTQwMjlmMWEyZTg4IiwiY3BmIjoiMzAwNzk0MjI0ODMifQ.avPvEK0vG8ngNiVwBecWH_zEXWQozTPzUPoGCoJunoo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    \"type\": \"TRANSFERENCIA\",\r\n    \"value\": \"100\",\r\n    \"account_number\": \"14839\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/30079422483/account/58879/transfer/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"30079422483",
+								"account",
+								"58879",
+								"transfer",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - User Transaction History",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTI1OTE3LCJpYXQiOjE3Mzg1MjQxMTcsImp0aSI6ImU1YTcwOGVlODY2ZjRjYzBhOWI2NjEwNWNlMDE4OTZlIiwiY3BmIjoiMTExMTExMTExMTEifQ.yOYS9eJ7pVERlQ1EY_sWg5EyBXMGK4QR7TDmfQntoVw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    \"type\": \"DEPOSITO\",\r\n    \"value\": \"100.87\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/30079422483/account/58879/any_history/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"30079422483",
+								"account",
+								"58879",
+								"any_history",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Log In - USER RECEIVER",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cpf\":\"21475997726\",\r\n    \"password\":\"User_1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/login/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - User + All Accounts RECEIVER",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTI1MDk0LCJpYXQiOjE3Mzg1MjMyOTQsImp0aSI6ImU0YjI4OWFiMjlmNjQ5OWZhOThiYTY0OWNlYWE1NGU1IiwiY3BmIjoiMjE0NzU5OTc3MjYifQ.3u7Ct9mdwrTB675FYLuSUdq8AgbBTinIHf4Xm84XgTk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/21475997726/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"21475997726",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - User + Account + Balance RECEIVER",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NTI1MDk0LCJpYXQiOjE3Mzg1MjMyOTQsImp0aSI6ImU0YjI4OWFiMjlmNjQ5OWZhOThiYTY0OWNlYWE1NGU1IiwiY3BmIjoiMjE0NzU5OTc3MjYifQ.3u7Ct9mdwrTB675FYLuSUdq8AgbBTinIHf4Xm84XgTk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/user/21475997726/account/14839/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"user",
+								"21475997726",
+								"account",
+								"14839",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

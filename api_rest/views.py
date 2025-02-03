@@ -28,6 +28,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         return super().post(request, *args, **kwargs)
 
 # Users CRUD - Admin permissions ONLY
+
+# Create user
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def create_user(request):
@@ -48,6 +50,7 @@ def create_user(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Edit user information
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def update_user(request, cpf):
@@ -61,12 +64,12 @@ def update_user(request, cpf):
 
         data = request.data
 
-        for field in ["username", "first_name", "last_name", "email", "cpf"]:
-            if ( (data.get(field) != "") and (data[field] != getattr(user, field))):
+        for field in ['username', 'first_name', 'last_name', 'email', 'cpf']:
+            if ( (data.get(field) != '') and (data[field] != getattr(user, field))):
                     setattr(user, field, data[field])
         
-        if ( (data.get("password") != "") and (check_password(data["password"], user.password))):
-                user.set_password(data["password"])
+        if ( (data.get('password') != '') and (check_password(data['password'], user.password))):
+                user.set_password(data['password'])
         
         user.save()
 
@@ -75,6 +78,7 @@ def update_user(request, cpf):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Delete (soft) User
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
 def delete_user(request, cpf):
@@ -94,6 +98,7 @@ def delete_user(request, cpf):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Activate user (undo soft Delete)
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def activate_user(request, cpf):
@@ -102,7 +107,7 @@ def activate_user(request, cpf):
         user = get_user_by_cpf(cpf)
         
         if user == None:
-            return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
         user.is_active = True
         user.save()
@@ -113,6 +118,8 @@ def activate_user(request, cpf):
 
 
 # Accounts CRUD - Admin permissions ONLY
+
+# Create account
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def create_account(request, cpf):
@@ -140,6 +147,7 @@ def create_account(request, cpf):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Delete (soft) account
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
 def delete_account(request, account_number):
@@ -161,6 +169,8 @@ def delete_account(request, account_number):
     
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+# Activate account (Undo soft Delete)
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def activate_account(request, account_number):
@@ -169,7 +179,7 @@ def activate_account(request, account_number):
         account  = get_account_by_acc_number(account_number)
         
         if account == None:
-            return Response({"error": "Conta não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Conta não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
 
         account.is_active = True
         account.save()
@@ -180,6 +190,8 @@ def activate_account(request, account_number):
 
 
 # Search Actions
+
+# Get all users
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_all_users(request):
@@ -192,6 +204,7 @@ def get_all_users(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Get all accounts
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_all_accounts(request):
@@ -205,6 +218,7 @@ def get_all_accounts(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Get all transactions
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_all_transactions(request):
@@ -218,6 +232,8 @@ def get_all_transactions(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Get self information (User)
+# If Admin, then get the user information
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_self(request, cpf):
@@ -234,7 +250,8 @@ def get_self(request, cpf):
     
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
+# Get self information (Account)
+# If Admin, then get the user information
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_self_account(request, cpf, account_number):
@@ -258,6 +275,7 @@ def get_self_account(request, cpf, account_number):
     
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+# Get account information
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_account(request, account_number):
@@ -271,7 +289,7 @@ def get_account(request, account_number):
         
         user = Users.objects.get(id = account.account_user.id)
         if user == None:
-            return Response({"error": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = UserAccountSerializer(user, context={'account': account})
 
@@ -283,6 +301,8 @@ def get_account(request, account_number):
 
 
 # Actions
+
+# Make Deposit
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def make_deposit(request, cpf, account_number):
@@ -326,6 +346,7 @@ def make_deposit(request, cpf, account_number):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Make Withdraw
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_withdraw(request, cpf, account_number):
@@ -344,7 +365,7 @@ def make_withdraw(request, cpf, account_number):
         value = Decimal(data['value'])
 
         if value > account.account_balance:
-            return Response({"error": "Saldo Insuficiente."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Saldo Insuficiente.'}, status=status.HTTP_400_BAD_REQUEST)
         
 
         try: 
@@ -369,6 +390,7 @@ def make_withdraw(request, cpf, account_number):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Make Transference
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_transfer(request, cpf, account_number):
@@ -391,7 +413,7 @@ def make_transfer(request, cpf, account_number):
         value = Decimal(data['value'])
 
         if account.account_balance < value:
-            return Response({"error": "Saldo insuficiente."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Saldo insuficiente.'}, status=status.HTTP_400_BAD_REQUEST)
 
         account_destination = get_account_by_acc_number(data['account_number'])
         validation = validate_account(account_destination)
@@ -422,6 +444,7 @@ def make_transfer(request, cpf, account_number):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# Transaction History
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def transaction_history(request, cpf, account_number):
@@ -455,9 +478,9 @@ def transaction_history(request, cpf, account_number):
                 if transaction_date:
                     transactions = transactions.filter(transaction_date__date=transaction_date.date())
                 else:
-                    return Response({"error": "Formado de data inválida (YYYY-MM-DD)."}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'error': 'Formado de data inválida (YYYY-MM-DD).'}, status=status.HTTP_400_BAD_REQUEST)
             except ValueError:
-                return Response({"error": "Formado de data inválida (YYYY-MM-DD)."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Formado de data inválida (YYYY-MM-DD).'}, status=status.HTTP_400_BAD_REQUEST)
 
         transactions = transactions.order_by('-transaction_date')
 

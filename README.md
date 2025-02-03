@@ -17,9 +17,8 @@ O projeto foi dividido nas seguintes etapas:
 [ ] Definições do Framework
 [ ] Objetos e Relacionamentos
 [ ] Migrations e Banco de Dados
-[ ] Requisições
 [ ] Autenticação e JWT
-[ ] Criação de Usuários e Login
+[ ] CRUD e demais Requisições
 
 
 
@@ -32,6 +31,7 @@ O projeto foi dividido nas seguintes etapas:
 * *psycopg2-binary* - Conexão com banco PostgreSQL;
 * *django[bcrypt]* - criptografia das senhas de usuários;
 * *djangorestframework-simplejwt* - autenticação JWT (Bearer Token);
+* *drf-yasg* - documentação endpoints da API
 
 Segue configuração inicial:
 
@@ -46,6 +46,7 @@ poetry add python-dotenv
 poetry add psycopg2-binary
 poetry add django[bcrypt]
 poetry add djangorestframework-simplejwt
+poetry add drf-yasg
 
 ```
 
@@ -123,13 +124,9 @@ Após isso o servidor pode ser inicializado para login como admin.
 python manage.py runserver
 ```
 
-O servidor pode ser acessado pelo endereço no terminal. Neste caso *http://127.0.0.1:8000/* e a url de admin em *http://127.0.0.1:8000/admin*
+O servidor pode ser acessado pelo endereço no terminal, por browser ou através do Postman (que foi utilizado nesse caso). 
 
-No postgreSQL o superuser criado se encontra na tabela *auth_users*
-
-```
-SELECT * FROM auth_user
-```
+Neste caso *http://127.0.0.1:8000/* e a url de admin em *http://127.0.0.1:8000/admin* foram utilizadas para fazer login.
 
 ### Popular o Banco de Dados
 
@@ -145,12 +142,24 @@ Para cada requisição prevista, um conjunto de itens deve ser criado:
 * Em *api_rest/urls.py* - será criado o endereço e a função correspondente a ele
 * Em *api_rest/views.py* - será criada a lógica da requisição e seu retorno
 * Em *api_rest/serializers.py* - será criado a lógica de consumo/retorno do json
+* Em *api_rest/views_functions.py* - setão funcões genérias que podem ser realizadas por diversas requisições.
 
-### Regras de Negócio
+Os endpoints da API podem ser visualizados em *http://localhost:8000/endpoints/*
 
-#### Tipos de transação:
+## Regras de Negócio
 
-A tabela de transações possui duas colunas que representam o id da conta de origem e o id da conta de destino. Isso pode mudar para o tipo de transação:
-* 'SAQUE' ou 'DEPOSITO' -  não necssariamente possuem uma conta de origem (Depósito) ou destino (Saque). Nesses casos o id da conta de origem e destino é o mesmo.
+- Nomes e comentários serão em inglês. Parâmetros que de alguma forma deve chegar ao usuário serão em português.
+
+- A tabela de transações possui duas colunas que representam o id da conta de origem e o id da conta de destino. Isso pode mudar para o tipo de transação. 'SAQUE' ou 'DEPOSITO' -  não necssariamente possuem uma conta de origem (Depósito) ou destino (Saque). Nesses casos o id da conta de origem e destino é o mesmo.
+
+- O 'DELETE' das requisições para contas e usuários será lógico (soft delete), onde o registro no banco de dados será mantido, mas não será mais utilizado (atribulo is_active). Para Transações, serão sempre mantidas.
+
+- Administradores apenas poderão realizar a criação de contas e usuários. Além disso, apenas um administrador pode realizar a operação de depósito em conta.
+
+- Administradores devem poder fazer todas as requisições GET, enquanto usuários devem poder realizar apenas quando referentes às próprias informações.
 
 
+## Futuro
+
+* Testes automatizados
+* Docker
